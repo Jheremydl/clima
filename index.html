@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WeatherPro - Pronóstico del Clima</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <i class="fas fa-cloud-sun"></i>
+                <span>WeatherPro</span>
+            </div>
+            <div class="nav-links">
+                <a href="#" class="nav-link active" data-section="home">Inicio</a>
+                <a href="#" class="nav-link" data-section="maps">Mapas</a>
+                <a href="#" class="nav-link" data-section="alerts">Alertas</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section - Search -->
+    <section id="homeSection" class="hero">
+        <div class="container">
+            <h1 class="hero-title">Pronóstico del Clima en Tiempo Real</h1>
+            <p class="hero-subtitle">Consulta el clima de cualquier ciudad del mundo</p>
+            
+            <div class="search-container">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="cityInput" placeholder="Buscar ciudad..." class="search-input">
+                    <button id="searchBtn" class="search-btn">
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+                <button id="locationBtn" class="location-btn">
+                    <i class="fas fa-location-crosshairs"></i>
+                    Usar mi ubicación
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Maps Section -->
+    <section id="mapsSection" class="maps-section hidden">
+        <div class="container">
+            <h1 class="section-page-title">
+                <i class="fas fa-map"></i>
+                Mapas del Clima
+            </h1>
+            <p class="section-page-subtitle">Visualiza las condiciones climáticas en mapas interactivos</p>
+            
+            <!-- Map Controls -->
+            <div class="map-controls">
+                <button class="map-btn active" data-layer="temp">
+                    <i class="fas fa-temperature-high"></i>
+                    Temperatura
+                </button>
+                <button class="map-btn" data-layer="precipitation">
+                    <i class="fas fa-cloud-rain"></i>
+                    Precipitación
+                </button>
+                <button class="map-btn" data-layer="wind">
+                    <i class="fas fa-wind"></i>
+                    Viento
+                </button>
+                <button class="map-btn" data-layer="clouds">
+                    <i class="fas fa-cloud"></i>
+                    Nubes
+                </button>
+                <button class="map-btn" data-layer="pressure">
+                    <i class="fas fa-gauge"></i>
+                    Presión
+                </button>
+            </div>
+
+            <!-- Map Container -->
+            <div class="map-container">
+                <div id="weatherMap" class="weather-map">
+                    <!-- El mapa se cargará aquí -->
+                </div>
+                <div class="map-legend">
+                    <h4 id="legendTitle">Temperatura (°C)</h4>
+                    <div id="legendContent" class="legend-gradient temp-gradient"></div>
+                </div>
+            </div>
+
+            <!-- Map Info Cards -->
+            <div class="map-info-grid">
+                <div class="map-info-card">
+                    <i class="fas fa-info-circle"></i>
+                    <h3>Cómo usar los mapas</h3>
+                    <p>Haz clic en los botones superiores para cambiar entre diferentes capas climáticas. Arrastra el mapa para explorar diferentes regiones.</p>
+                </div>
+                <div class="map-info-card">
+                    <i class="fas fa-clock"></i>
+                    <h3>Actualización en tiempo real</h3>
+                    <p>Los mapas se actualizan automáticamente con datos de las últimas 3 horas de estaciones meteorológicas globales.</p>
+                </div>
+                <div class="map-info-card">
+                    <i class="fas fa-layer-group"></i>
+                    <h3>Múltiples capas</h3>
+                    <p>Visualiza temperatura, precipitación, viento, nubes y presión atmosférica en mapas interactivos.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Alerts Section -->
+    <section id="alertsSection" class="alerts-section hidden">
+        <div class="container">
+            <h1 class="section-page-title">
+                <i class="fas fa-triangle-exclamation"></i>
+                Alertas Meteorológicas
+            </h1>
+            <p class="section-page-subtitle">Mantente informado sobre condiciones climáticas extremas</p>
+
+            <!-- Alert Filters -->
+            <div class="alert-filters">
+                <button class="filter-btn active" data-filter="all">
+                    <i class="fas fa-globe"></i>
+                    Todas
+                </button>
+                <button class="filter-btn" data-filter="severe">
+                    <i class="fas fa-bolt"></i>
+                    Severas
+                </button>
+                <button class="filter-btn" data-filter="moderate">
+                    <i class="fas fa-exclamation"></i>
+                    Moderadas
+                </button>
+                <button class="filter-btn" data-filter="minor">
+                    <i class="fas fa-info"></i>
+                    Menores
+                </button>
+            </div>
+
+            <!-- Alerts Grid -->
+            <div id="alertsGrid" class="alerts-grid">
+                <!-- Las alertas se cargarán dinámicamente -->
+            </div>
+
+            <!-- Alert Info Section -->
+            <div class="alert-info-section">
+                <h3><i class="fas fa-shield-halved"></i> Sistema de Alertas</h3>
+                <div class="alert-types-grid">
+                    <div class="alert-type">
+                        <div class="alert-icon severe">
+                            <i class="fas fa-triangle-exclamation"></i>
+                        </div>
+                        <h4>Alerta Severa</h4>
+                        <p>Condiciones peligrosas que representan una amenaza significativa para la vida o propiedad.</p>
+                    </div>
+                    <div class="alert-type">
+                        <div class="alert-icon moderate">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        <h4>Alerta Moderada</h4>
+                        <p>Condiciones adversas que pueden afectar actividades al aire libre o causar inconvenientes.</p>
+                    </div>
+                    <div class="alert-type">
+                        <div class="alert-icon minor">
+                            <i class="fas fa-info-circle"></i>
+                        </div>
+                        <h4>Alerta Menor</h4>
+                        <p>Condiciones meteorológicas inusuales que requieren atención pero no representan peligro inmediato.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main id="mainContent" class="main-content">
+        <div class="container">
+            <!-- Loading Spinner -->
+            <div id="loadingSpinner" class="loading-spinner hidden">
+                <div class="spinner"></div>
+                <p>Cargando datos del clima...</p>
+            </div>
+
+            <!-- Error Message -->
+            <div id="errorMessage" class="error-message hidden">
+                <i class="fas fa-exclamation-circle"></i>
+                <p id="errorText"></p>
+            </div>
+
+            <!-- Weather Display -->
+            <div id="weatherDisplay" class="weather-display hidden">
+                <!-- Current Weather Card -->
+                <div class="current-weather">
+                    <div class="location-info">
+                        <h2 id="cityName">Ciudad</h2>
+                        <p id="currentDate">Fecha</p>
+                    </div>
+
+                    <div class="weather-main">
+                        <div class="temperature-container">
+                            <div class="weather-icon-large">
+                                <i id="weatherIcon" class="fas fa-cloud"></i>
+                            </div>
+                            <div class="temperature-info">
+                                <h1 id="temperature" class="temperature">--°</h1>
+                                <p id="weatherDescription" class="weather-description">--</p>
+                            </div>
+                        </div>
+
+                        <div class="weather-details-grid">
+                            <div class="detail-card">
+                                <i class="fas fa-temperature-high"></i>
+                                <div class="detail-info">
+                                    <span class="detail-label">Sensación térmica</span>
+                                    <span id="feelsLike" class="detail-value">--°</span>
+                                </div>
+                            </div>
+                            <div class="detail-card">
+                                <i class="fas fa-droplet"></i>
+                                <div class="detail-info">
+                                    <span class="detail-label">Humedad</span>
+                                    <span id="humidity" class="detail-value">--%</span>
+                                </div>
+                            </div>
+                            <div class="detail-card">
+                                <i class="fas fa-wind"></i>
+                                <div class="detail-info">
+                                    <span class="detail-label">Viento</span>
+                                    <span id="windSpeed" class="detail-value">-- km/h</span>
+                                </div>
+                            </div>
+                            <div class="detail-card">
+                                <i class="fas fa-gauge"></i>
+                                <div class="detail-info">
+                                    <span class="detail-label">Presión</span>
+                                    <span id="pressure" class="detail-value">-- hPa</span>
+                                </div>
+                            </div>
+                            <div class="detail-card">
+                                <i class="fas fa-eye"></i>
+                                <div class="detail-info">
+                                    <span class="detail-label">Visibilidad</span>
+                                    <span id="visibility" class="detail-value">-- km</span>
+                                </div>
+                            </div>
+                            <div class="detail-card">
+                                <i class="fas fa-cloud"></i>
+                                <div class="detail-info">
+                                    <span class="detail-label">Nubosidad</span>
+                                    <span id="cloudiness" class="detail-value">--%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sun Info -->
+                    <div class="sun-info">
+                        <div class="sun-item">
+                            <i class="fas fa-sun"></i>
+                            <div>
+                                <span class="sun-label">Amanecer</span>
+                                <span id="sunrise" class="sun-time">--:--</span>
+                            </div>
+                        </div>
+                        <div class="sun-item">
+                            <i class="fas fa-moon"></i>
+                            <div>
+                                <span class="sun-label">Atardecer</span>
+                                <span id="sunset" class="sun-time">--:--</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hourly Forecast -->
+                <div class="forecast-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-clock"></i>
+                        Pronóstico por Hora
+                    </h3>
+                    <div id="hourlyForecast" class="hourly-forecast">
+                        <!-- Se llenará dinámicamente -->
+                    </div>
+                </div>
+
+                <!-- Daily Forecast -->
+                <div class="forecast-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-calendar-days"></i>
+                        Pronóstico de 7 Días
+                    </h3>
+                    <div id="dailyForecast" class="daily-forecast">
+                        <!-- Se llenará dinámicamente -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 WeatherPro. Datos proporcionados por OpenWeatherMap API</p>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
